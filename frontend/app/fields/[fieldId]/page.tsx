@@ -18,6 +18,14 @@ export default async function Page({ params }: PageProps) {
     const { fieldId } = await params;
     const data = await getFieldDashboardData(fieldId);
 
+    if (!data) {
+        return (
+            <div className="flex items-center justify-center h-screen">
+                <p className="text-xl text-slate-600">Field not found</p>
+            </div>
+        );
+    }
+
     return (
         <div className="flex h-screen w-full bg-[#f4f1ea] text-[#2d412d] font-sans overflow-hidden">
 
