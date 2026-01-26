@@ -7,17 +7,18 @@ export interface User {
 export interface Field {
     id: string;
     name: string;
-    coordinates: {
+    coordinates?: {
         lat: number;
         lng: number;
     };
-    location: string;
-    plantedAreaHa: number;
-    soilWateringIntervalHours: number;
-    ndvi: number;
-    humidity: number;
-    humidityOptimal: boolean;
-    humidityOptimalCrop?: string; // e.g., "FOR RICE"
+    location?: string | { coordinates: number[] };
+    plantedAreaHa?: number;
+    soilWateringIntervalHours?: number;
+    ndvi?: number;
+    humidity?: number;
+    humidityOptimal?: boolean;
+    humidityOptimalCrop?: string;
+    size?: number; // Alternative to plantedAreaHa
 }
 
 export interface Crop {
