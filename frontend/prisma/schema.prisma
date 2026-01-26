@@ -1,0 +1,171 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String           @id @default(auto()) @map("_id") @db.ObjectId
+  name            String?
+  email           String?          @unique
+  createdAt       DateTime         @default(now())
+  
+  // Relations
+  recommendations Recommendation[]
+  
+  // FIX ADDED HERE: This connects the User to their Fields
+  fields          Field[]
+}
+
+model Recommendation {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String?   @db.ObjectId
+  user            User?     @relation(fields: [userId], references: [id])
+  
+  // Input parameters
+  N               Float
+  P               Float
+  K               Float
+  temperature     Float
+  humidity        Float
+  ph              Float
+  rainfall        Float
+  location        String?
+  
+  // Result
+  result          Json      // Stores top crops and probabilities
+  explanation     String?
+  
+  feedback        Feedback?
+  
+  createdAt       DateTime  @default(now())
+}
+
+model Feedback {
+  id               String         @id @default(auto()) @map("_id") @db.ObjectId
+  recommendationId String         @unique @db.ObjectId
+  recommendation   Recommendation @relation(fields: [recommendationId], references: [id])
+  
+  chosenCrop       String
+  success          Boolean
+  notes            String?
+  
+  createdAt        DateTime       @default(now())
+}
+
+model CropInfo {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String   @unique
+  description String
+  
+  // Ideal ranges
+  minN        Float?
+  maxN        Float?
+  minP        Float?
+  maxP        Float?
+  minK        Float?
+  maxK        Float?
+  minPh       Float?
+  maxPh       Float?
+  minTemp     Float?
+  maxTemp     Float?
+  minHumid    Float?
+  maxHumid    Float?
+  minRain     Float?
+  maxRain     Float?
+}
+
+// 1. A physical plot of land
+model Field {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String   // e.g. "North Sector"
+  location    String?
+  area        Float    // Hectares
+  coordinates String?  // GeoJSON or simple string
+  
+  // Connect to User
+  userId      String   @db.ObjectId
+  user        User     @relation(fields: [userId], references: [id])
+  
+  // Relations
+  crops       PlantedCrop[]
+  readings    SensorReading[]
+  schedules   IrrigationSchedule[]
+  fertilizers FertilizerApplication[]
+  observations Observation[]
+}
+
+// 2. What is currently growing there?
+model PlantedCrop {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String   // e.g. "Corn"
+  status    String   // e.g. "Healthy", "Critical"
+  yield     Float    // Expected yield %
+  
+  fieldId   String   @db.ObjectId
+  field     Field    @relation(fields: [fieldId], references: [id])
+}
+
+// 3. IoT Data (or Simulated Data)
+model SensorReading {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  timestamp   DateTime @default(now())
+  
+  // Sensor Values
+  nitrogen    Float
+  phosphorus  Float
+  potassium   Float
+  temperature Float
+  humidity    Float
+  leafArea    Float
+  
+  fieldId     String   @db.ObjectId
+  field       Field    @relation(fields: [fieldId], references: [id])
+}
+
+// 4. Irrigation Schedule
+model IrrigationSchedule {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  time        String   // e.g. "06:00 AM"
+  duration    Int      // minutes
+  frequency   String   // "Daily", "Every 2 days", "Weekly"
+  active      Boolean  @default(true)
+  
+  fieldId     String   @db.ObjectId
+  field       Field    @relation(fields: [fieldId], references: [id])
+  
+  createdAt   DateTime @default(now())
+}
+
+// 5. Fertilizer Application Tracker
+model FertilizerApplication {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  type        String   // "Organic", "NPK", "Urea", etc.
+  amount      Float    // kg
+  nitrogen    Float?   // N content
+  phosphorus  Float?   // P content
+  potassium   Float?   // K content
+  notes       String?
+  
+  fieldId     String   @db.ObjectId
+  field       Field    @relation(fields: [fieldId], references: [id])
+  
+  appliedAt   DateTime @default(now())
+}
+
+// 6. Field Observation Journal
+model Observation {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  growthStage String   // "Seedling", "Vegetative", "Flowering", etc.
+  healthRating Int     // 1-10
+  notes       String?
+  photoUrl    String?  // Cloud storage URL
+  
+  fieldId     String   @db.ObjectId
+  field       Field    @relation(fields: [fieldId], references: [id])
+  
+  createdAt   DateTime @default(now())
+}

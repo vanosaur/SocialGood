@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --color-harvesta-green: #3a5a40;
+    --color-harvesta-light: #dad7cd;
+    --color-harvesta-accent: #a3b18a;
+    --color-harvesta-dark: #344e41;
+    --color-harvesta-cream: #fefae0;
+}
+
+body {
+    background-color: var(--color-harvesta-cream);
+    color: var(--color-harvesta-dark);
+    font-family: 'Inter', sans-serif;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--color-harvesta-accent);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-harvesta-green);
+}
