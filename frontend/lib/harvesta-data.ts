@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { Crop } from '@/types/harvesta';
 
 // Prevent multiple Prisma instances in development
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
@@ -19,17 +20,24 @@ export interface DashboardData {
     location: { coordinates: number[] }; // GeoJSON-like [lng, lat]
     size: number; // Raw number (acres/hectares)
   };
-  crops: {
-    name: string;
-    health: number; // Mapped from yield/status for now
-    status: string;
-  }[];
+  crops: Crop[];
   stats: {
     soilMoisture: number; // Mapped from humidity or similar
     nitrogen: number;
     phosphorus: number;
     potassium: number;
   };
+  npk: {
+    nitrogen: { current: number; max: number };
+    phosphorus: { current: number; max: number };
+    potassium: { current: number; max: number };
+    weekLabel: string;
+  };
+  leafAreaIndex: {
+    weekLabel: string;
+    value: number;
+    isCurrentWeek: boolean;
+  }[];
 }
 
 // Fetch dashboard data based on Field ID
@@ -48,55 +56,55 @@ export async function getFieldDashboardData(fieldId: string): Promise<DashboardD
       }
     });
 
-    if (!fieldData) {
-      console.warn(`Field with ID ${fieldId} not found.`);
-      return null;
-    }
+    if (!fieldData) return null;
 
-    // 2. Extract latest sensor reading (handle case where no readings exist)
-    const latest = fieldData.readings[0] || {
-      nitrogen: 0, phosphorus: 0, potassium: 0,
-      humidity: 0, leafArea: 0, temperature: 0
-    };
+    // 2. Transform the data
+    const latestReading = fieldData.readings[0] || {};
 
-    // Parse coordinates safely
-    let coords = [0, 0];
-    try {
-      if (fieldData.coordinates) {
-        coords = JSON.parse(fieldData.coordinates);
-      }
-    } catch (e) {
-      console.warn("Failed to parse coordinates", fieldData.coordinates);
-    }
-
-    // 3. Transform DB Data -> Dashboard UI Data
     return {
       user: {
-        name: fieldData.user.name || "Farmer",
-        role: "Owner",
-        avatar: "/default-avatar.jpg",
+        name: fieldData.user?.name || 'Farmer',
+        role: 'Owner', // Default role
+        avatar: '/user-avatar.jpg', // Placeholder
       },
       field: {
         id: fieldData.id,
         name: fieldData.name,
-        location: { coordinates: coords },
+        location: fieldData.coordinates ? JSON.parse(fieldData.coordinates) : { coordinates: [0, 0] },
         size: fieldData.area,
       },
-      crops: fieldData.crops.map(crop => ({
-        name: crop.name,
-        health: crop.yield, // Using yield as a proxy for health score in this UI
-        status: crop.status
+      crops: fieldData.crops.map(c => ({
+        id: c.id,
+        label: c.name,
+        name: c.name,
+        yieldLevel: c.yield > 80 ? 'High' : c.yield > 50 ? 'Medium' : 'Low',
       })),
       stats: {
-        soilMoisture: latest.humidity, // Using humidity as soil moisture proxy
-        nitrogen: latest.nitrogen,
-        phosphorus: latest.phosphorus,
-        potassium: latest.potassium,
-      }
+        soilMoisture: latestReading.humidity || 0,
+        nitrogen: latestReading.nitrogen || 0,
+        phosphorus: latestReading.phosphorus || 0,
+        potassium: latestReading.potassium || 0,
+      },
+      // Mock/Calculated NPK for the trend card
+      npk: {
+        nitrogen: { current: latestReading.nitrogen || 65, max: 130 },
+        phosphorus: { current: latestReading.phosphorus || 45, max: 70 },
+        potassium: { current: latestReading.potassium || 50, max: 80 },
+        weekLabel: 'This Week',
+      },
+      // Mock Leaf Area Index data
+      leafAreaIndex: [
+        { weekLabel: 'WEEK 01', value: 2.1, isCurrentWeek: false },
+        { weekLabel: 'WEEK 02', value: 2.3, isCurrentWeek: false },
+        { weekLabel: 'WEEK 03', value: 2.8, isCurrentWeek: false },
+        { weekLabel: 'WEEK 04', value: 3.2, isCurrentWeek: false },
+        { weekLabel: 'WEEK 05', value: 3.5, isCurrentWeek: false },
+        { weekLabel: 'WEEK 06', value: 3.8, isCurrentWeek: false },
+        { weekLabel: 'WEEK 07', value: 4.1, isCurrentWeek: true },
+      ]
     };
-
   } catch (error) {
-    console.error("Error fetching dashboard data:", error);
+    console.error('Error fetching dashboard data:', error);
     return null;
   }
 }
