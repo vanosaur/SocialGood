@@ -16,8 +16,8 @@ export default function FieldHeader({ field }: FieldHeaderProps) {
                     <h1 className="text-xl font-bold text-[#2d412d]">{field.name}</h1>
                 </div>
                 <div className="text-xs text-slate-500 font-mono border-l border-slate-300 pl-4">
-                    {field.coordinates.lat.toFixed(4)}°N<br />
-                    {Math.abs(field.coordinates.lng).toFixed(4)}°W
+                    {field.coordinates?.lat.toFixed(4) || '0.00'}°N<br />
+                    {Math.abs(field.coordinates?.lng || 0).toFixed(4)}°W
                 </div>
             </div>
 
@@ -27,14 +27,16 @@ export default function FieldHeader({ field }: FieldHeaderProps) {
                     <div className="p-2 bg-[#e8e8e8] rounded-full"><CloudRain size={16} className="text-[#2d412d]" /></div>
                     <div>
                         <p className="text-xs text-slate-500">Soil Watering</p>
-                        <p className="font-bold text-[#2d412d]">{field.soilWateringIntervalHours}h</p>
+                        <p className="font-bold text-[#2d412d]">{field.soilWateringIntervalHours || 0}h</p>
                     </div>
                 </div>
                 <div className="bg-[#f4f1ea] px-4 py-2 rounded-2xl flex items-center gap-3 shadow-sm border border-[#e8e4db]">
                     <div className="p-2 bg-[#e8e8e8] rounded-full"><MapPin size={16} className="text-[#2d412d]" /></div>
                     <div>
                         <p className="text-xs text-slate-500">Location</p>
-                        <p className="font-bold text-[#2d412d]">{field.location}</p>
+                        <p className="font-bold text-[#2d412d]">
+                            {typeof field.location === 'string' ? field.location : 'Sector Alpha'}
+                        </p>
                     </div>
                 </div>
                 <div className="flex flex-col gap-2">

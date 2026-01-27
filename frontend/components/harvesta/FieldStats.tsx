@@ -24,7 +24,7 @@ export default function FieldStats({ field }: FieldStatsProps) {
     return (
         <div className="flex gap-6 mb-6 pointer-events-auto">
             <StatPill label="Planted area" value={`${field.plantedAreaHa}ha`} icon={<Sprout size={18} />} />
-            <StatPill label="Current NDVI" value={field.ndvi.toString()} icon={<ArrowUpRight size={18} />} />
+            <StatPill label="Current NDVI" value={(field.ndvi || 0).toString()} icon={<ArrowUpRight size={18} />} />
             <StatPill label="Humidity" value={`${field.humidity}%`} icon={<Droplets size={18} />} />
         </div>
     );
