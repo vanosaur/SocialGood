@@ -10,7 +10,8 @@ async function listModels() {
     const genAI = new GoogleGenerativeAI(apiKey);
 
     try {
-        const models = await genAI.listModels();
+        // @ts-ignore
+        const models = await (genAI as any).listModels();
         console.log("\n✅ Available Models:");
         for await (const model of models) {
             console.log(`  - ${model.name}`);
