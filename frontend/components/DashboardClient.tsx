@@ -143,9 +143,9 @@ export default function DashboardClient({ user, field, stats, crops }: Dashboard
                         <div className="flex-1 bg-white rounded-2xl p-4 flex flex-col justify-between relative overflow-hidden">
                             <span className="bg-[#c5e065] self-start px-2 py-1 rounded-lg text-xs font-bold text-[#2d412d]">Live Health</span>
                             <div className="relative z-10">
-                                {/* REAL DATA: Crop Health */}
-                                <span className="text-5xl font-bold block mb-1">{crops[0]?.health || 0}%</span>
-                                <span className="text-xs text-slate-500 uppercase tracking-wide">Health Score</span>
+                                {/* REAL DATA: Yield Level of first crop */}
+                                <span className="text-4xl font-bold block mb-1">{crops[0]?.yieldLevel || 'N/A'}</span>
+                                <span className="text-xs text-slate-500 uppercase tracking-wide">Yield Forecast</span>
                             </div>
                         </div>
 
@@ -154,11 +154,11 @@ export default function DashboardClient({ user, field, stats, crops }: Dashboard
                             {crops.map((crop, i) => (
                                 <div key={i} className="flex items-center gap-3 bg-white p-2 pr-4 rounded-xl shadow-sm">
                                     <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-xs font-bold">
-                                        {crop.name[0].toUpperCase()}
+                                        {crop.label[0].toUpperCase()}
                                     </div>
                                     <div className="flex-1">
-                                        <p className="text-sm font-bold capitalize">{crop.name}</p>
-                                        <p className="text-[10px] text-slate-500 text-right">{crop.status}</p>
+                                        <p className="text-sm font-bold capitalize">{crop.label}</p>
+                                        <p className="text-[10px] text-slate-500 text-right">{crop.yieldLevel}</p>
                                     </div>
                                 </div>
                             ))}
