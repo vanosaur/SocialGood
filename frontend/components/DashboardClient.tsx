@@ -9,7 +9,9 @@ import {
     Search, ArrowUpRight, Send, ChevronRight, MapPin
 } from 'lucide-react';
 
-// --- MAP COMPONENTS (Dynamic Import) ---
+import { Crop } from '@/types/harvesta';
+
+// Dynamically import Map (client-side only)
 const MapBackground = dynamic(
     () => import('./MapBackground'),
     { ssr: false }
@@ -35,11 +37,7 @@ interface DashboardProps {
         phosphorus: number;
         potassium: number;
     };
-    crops: Array<{
-        name: string;
-        health: number;
-        status: string;
-    }>;
+    crops: Crop[];
 }
 // --- MAIN COMPONENT ---
 export default function DashboardClient({ user, field, stats, crops }: DashboardProps) {
