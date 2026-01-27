@@ -5,3 +5,5 @@ pandas
 numpy
 python-dotenv
 joblib
+google-generativeai
+max-in-flight-requests
