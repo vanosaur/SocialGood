@@ -54,9 +54,9 @@ git push -u origin main
 4. **Add Environment Variables**
 Click "Environment Variables" and add:
 ```
-DATABASE_URL=mongodb+srv://vanirudra0914_db_user:vani._.14@cluster0.shnisch.mongodb.net/harvesta?appName=Cluster0
-GEMINI_API_KEY=AIzaSyBXv2seqthhlah2kuJygPZHM7XyLWJNp4A
-NEXT_PUBLIC_OPENWEATHER_API_KEY=b75cd6b9401b1b958bae8465f697d716
+DATABASE_URL=mongodb+srv://<USERNAME>:<PASSWORD>@cluster0.mongodb.net/harvesta
+GEMINI_API_KEY=your_gemini_api_key_here
+NEXT_PUBLIC_OPENWEATHER_API_KEY=your_openweather_api_key_here
 ML_SERVICE_URL=https://your-backend-url.railway.app
 ```
 (We'll update ML_SERVICE_URL after deploying backend)
