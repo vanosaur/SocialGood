@@ -109,20 +109,28 @@ export async function getFieldDashboardData(fieldId: string): Promise<DashboardD
   }
 }
 
+import { auth } from '@/auth';
+
 // Helper: Get Current User (Used by Layout)
-// In a real app with Auth, you'd fetch this using session/cookies.
-// Here we just fetch the first user from the DB for demo purposes.
 export async function getCurrentUser() {
   try {
-    const user = await prisma.user.findFirst();
-    if (!user) {
-      // Fallback if DB is empty
-      return { name: "Guest", role: "Visitor", avatarUrl: "/default-avatar.jpg" };
+    const session = await auth();
+
+    if (!session?.user) {
+      // Guest fallback (or redirect logic handling in Middleware)
+      return {
+        name: "Guest",
+        role: "Visitor",
+        avatarUrl: "/default-avatar.jpg",
+        email: ""
+      };
     }
+
     return {
-      name: user.name || "Farmer",
-      role: "Owner", // Static role for now
-      avatarUrl: "/default-avatar.jpg" // Fallback avatar
+      name: session.user.name || "Farmer",
+      email: session.user.email || "",
+      role: "Owner", // Static role for now, could be added to DB schema later
+      avatarUrl: session.user.image || "/default-avatar.jpg"
     };
   } catch (error) {
     console.error("Error fetching user for layout:", error);

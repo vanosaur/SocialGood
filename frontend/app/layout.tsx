@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { LayoutDashboard, Sprout, Droplets, CloudRain, Bug, Package, FileText, HelpCircle, Search, Bell, Settings, Eye } from 'lucide-react';
+import { LayoutDashboard, Sprout, Droplets, CloudRain, Bug, Package, FileText, HelpCircle, Search, Bell, Settings, Eye, History } from 'lucide-react';
 import React from 'react';
 
 import './globals.css';
@@ -36,6 +36,8 @@ export default async function DashboardLayout({
             <NavItem href="/observations" icon={<Eye size={20} />} label="Observations" />
             <NavItem href="/inventory" icon={<Package size={20} />} label="Inventory" />
             <NavItem href="/reports" icon={<FileText size={20} />} label="Reports" />
+            <NavItem href="/history" icon={<History size={20} />} label="History" />
+            <NavItem href="/settings" icon={<Settings size={20} />} label="Settings" />
             <NavItem href="/help" icon={<HelpCircle size={20} />} label="Help" />
           </nav>
 
